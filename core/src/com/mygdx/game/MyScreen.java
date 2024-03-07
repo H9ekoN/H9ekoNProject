@@ -25,22 +25,25 @@ public class MyScreen implements Screen {
     private OrthogonalTiledMapRenderer renderer;
     public static final float UNIT_SCALE = 1f / 16f;
     Box2DDebugRenderer box2DDebugRenderer;
-    Texture img;
+    Texture imgfirst, imgsecond;
     SpriteBatch batch;
     BitmapFont font;
     private Stage stage = new Stage();
     private Table table;
     Skin skin;
     TextureAtlas atlas;
+    private Character charfirst, charsecond;
 
     public MyScreen(){
         box2DDebugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
-        img = new Texture("MasterFish.png");
+        imgfirst = new Texture("MasterFish.png");
         map = new TmxMapLoader().load("map.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, UNIT_SCALE);
         camera.setToOrtho(false, 100, 100);
         world = new World(new Vector2(), false);
+        charfirst = new Character(300*UNIT_SCALE, 240*UNIT_SCALE, 200, world, imgfirst);
+
     }
     @Override
     public void show() {
@@ -51,15 +54,23 @@ public class MyScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(1,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        world.step(delta, 4,4);
-        batch.begin();
-        batch.draw(img, 0,0, 100, 100);
-        batch.end();
+
 
         camera.update();
         renderer.setView(camera);
         renderer.render();
+        world.step(delta, 4,4);
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        charfirst.draw(batch);
+
+        batch.end();
+
         box2DDebugRenderer.render(world, camera.combined);
+
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
@@ -86,7 +97,7 @@ public class MyScreen implements Screen {
     public void dispose() {
         map.dispose();
         world.dispose();
-        img.dispose();
+        imgfirst.dispose();
         batch.dispose();
     }
 }
