@@ -19,12 +19,12 @@ public class Character {
     public Character(float x, float y, float radius, World world, Texture img){
         RADIUS = radius;
         this.img = img;
-        body = createRectBody(x, y, RADIUS * MyScreen.UNIT_SCALE, world);
+        body = createRectBody(x, y, (float) (RADIUS * MyScreen.UNIT_SCALE * 1.2), world);
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(img, this.body.getPosition().x - RADIUS * MyScreen.UNIT_SCALE, body.getPosition().y - RADIUS * MyScreen.UNIT_SCALE *1.2f,
-                RADIUS * MyScreen.UNIT_SCALE * 2, (float) (2.2 * RADIUS * MyScreen.UNIT_SCALE));
+        batch.draw(img, this.body.getPosition().x - RADIUS * MyScreen.UNIT_SCALE, (float) (body.getPosition().y - RADIUS * MyScreen.UNIT_SCALE + MyScreen.UNIT_SCALE*0.6),
+                RADIUS * MyScreen.UNIT_SCALE * 2, (float) (2.5 * RADIUS * MyScreen.UNIT_SCALE));
     }
 
     public void addForce(Vector2 v){

@@ -38,12 +38,13 @@ public class MyScreen implements Screen {
         box2DDebugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
         imgfirst = new Texture("MasterFish.png");
+        imgsecond = new Texture("monster1stay1.png");
         map = new TmxMapLoader().load("map.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, UNIT_SCALE);
         camera.setToOrtho(false, 100, 100);
         world = new World(new Vector2(), false);
-        charfirst = new Character(300*UNIT_SCALE, 240*UNIT_SCALE, 200, world, imgfirst);
-
+        charfirst = new Character(300*UNIT_SCALE, 250*UNIT_SCALE, 200, world, imgfirst);
+        charsecond = new Character(1200*UNIT_SCALE, 250*UNIT_SCALE, 300, world, imgsecond);
     }
     @Override
     public void show() {
@@ -64,7 +65,7 @@ public class MyScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         charfirst.draw(batch);
-
+        charsecond.draw(batch);
         batch.end();
 
         box2DDebugRenderer.render(world, camera.combined);
@@ -98,6 +99,7 @@ public class MyScreen implements Screen {
         map.dispose();
         world.dispose();
         imgfirst.dispose();
+        imgsecond.dispose();
         batch.dispose();
     }
 }
