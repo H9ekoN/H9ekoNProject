@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 
@@ -15,11 +16,15 @@ public class Character {
     private Texture img;
     public BodyDef def;
     public static float RADIUS;
+    private float Xpos;
+    private float Ypos;
 
     public Character(float x, float y, float radius, World world, Texture img){
         RADIUS = radius;
         this.img = img;
-        body = createRectBody(x, y, (float) (RADIUS * MyScreen.UNIT_SCALE * 1.2), world);
+        body = createCircleBody(x, y, (float) (RADIUS * MyScreen.UNIT_SCALE * 1.2), world);
+        Xpos = body.getPosition().x;
+        Ypos = body.getPosition().y;
     }
 
     public void draw(SpriteBatch batch) {
@@ -32,10 +37,10 @@ public class Character {
     }
 
     public void setVelocity(float x, float y){
-        body.setLinearVelocity(x, y);
+            body.setLinearVelocity(x,y);
     }
 
-    private Body createRectBody(float x, float y, float radius,  World world){
+    private Body createCircleBody(float x, float y, float radius,  World world){
         def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody;
         def.fixedRotation = true;
@@ -51,5 +56,6 @@ public class Character {
 
         return body;
     }
+
 
 }
