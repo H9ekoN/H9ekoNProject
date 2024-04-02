@@ -9,10 +9,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 
-import jdk.tools.jlink.internal.Main;
-
-
-public class Character {
+public class Mobs {
     private String name;
     private Body body;
     private Texture img;
@@ -21,9 +18,8 @@ public class Character {
     private float Xpos;
     private float Ypos;
     private boolean live = true;
-    Texture Dieimg = new Texture("RIPCharacter.png");
 
-    public Character(String name, float x, float y, float radius, World world, Texture img) {
+    public Mobs(String name, float x, float y, float radius, World world, Texture img) {
         RADIUS = radius;
         this.img = img;
         body = createCircleBody(x, y, (float) (RADIUS * MyScreen.UNIT_SCALE * 1.2), world);
@@ -47,7 +43,7 @@ public class Character {
 
     private Body createCircleBody(float x, float y, float radius, World world) {
         def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
+        def.type = BodyDef.BodyType.StaticBody;
         def.fixedRotation = true;
         Body body = world.createBody(def);
 
@@ -72,11 +68,6 @@ public class Character {
 
     public float getRADIUS() {
         return RADIUS;
-    }
-
-    public void die() {
-        live = false;
-        img = Dieimg;
     }
 
     public boolean getLive() {

@@ -16,23 +16,25 @@ public class RectangleForMyGame {
     float width;
     float height;
 
-    public RectangleForMyGame(float x, float y, float width, float height, int material, World world, Texture img){
+    public RectangleForMyGame(float x, float y, float width, float height, int material, World world, Texture img) {
         this.img = img;
         this.width = width;
         this.height = height;
-        body = createRectangularBody(x, y, width, height, material,  world);
+        body = createRectangularBody(x, y, width, height, material, world);
         Xpos = body.getPosition().x;
         Ypos = body.getPosition().y;
     }
+
     public void draw(SpriteBatch batch) {
-        batch.draw(img, this.body.getPosition().x - width * MyScreen.UNIT_SCALE, (float) (body.getPosition().y - height * MyScreen.UNIT_SCALE + MyScreen.UNIT_SCALE*0.6),
+        batch.draw(img, this.body.getPosition().x - width * MyScreen.UNIT_SCALE, (float) (body.getPosition().y - height * MyScreen.UNIT_SCALE + MyScreen.UNIT_SCALE * 0.6),
                 width * MyScreen.UNIT_SCALE * 2, (float) (2.5 * height * MyScreen.UNIT_SCALE));
     }
 
-    public void setVelocity(float x, float y){
-        body.setLinearVelocity(x,y);
+    public void setVelocity(float x, float y) {
+        body.setLinearVelocity(x, y);
     }
-    private Body createRectangularBody(float posx, float posy, float width, float height, int material, World world){
+
+    private Body createRectangularBody(float posx, float posy, float width, float height, int material, World world) {
         BodyDef boxBodyDef = new BodyDef();
         boxBodyDef.position.x = posx;
         boxBodyDef.position.y = posy;
@@ -40,7 +42,7 @@ public class RectangleForMyGame {
 
         Body boxBody = world.createBody(boxBodyDef);
         PolygonShape poly = new PolygonShape();
-        poly.setAsBox(width/2, height/2);
+        poly.setAsBox(width / 2, height / 2);
         boxBody.createFixture(poly, material);
         poly.dispose();
 

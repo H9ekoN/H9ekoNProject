@@ -8,46 +8,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JoyStick extends Actor {
-        private Texture circle, curStick;
-        private boolean isTouchStick = false;
-        private float rad = 275;
-        private static final float currad = 75;
-        private float curX = 0;
-        private float curY = 0;
-        private float inverseRad;
-        private float valueX = 0;
-        private float valueY = 0;
-        public void setCenterPosition(float x, float y){
+    private Texture circle, curStick;
+    private boolean isTouchStick = false;
+    private float rad = 275;
+    private static final float currad = 75;
+    private float curX = 0;
+    private float curY = 0;
+    private float inverseRad;
+    private float valueX = 0;
+    private float valueY = 0;
+    public void setCenterPosition(float x, float y){
         setPosition(x - rad, y - rad);
     }
-        public float getValueX(){
+    public float getValueX(){
         return valueX;
     }
-        public float getValueY(){
+    public float getValueY(){
         return valueY;
     }
-        public boolean isTouchStick(){
+    public boolean isTouchStick(){
         return isTouchStick;
     }
-        private List<JoystickChangedListener> listeners = new ArrayList<>();
-        public void addJoystickChangedListeners(){listeners.clear();}
-        public void removeJoystickChangedListener(JoystickChangedListener listener){listeners.remove(listener);}
-        public void clearJoystickChangedListener(JoystickChangedListener listener){
-            listeners.clear();
+    private List<JoystickChangedListener> listeners = new ArrayList<>();
+    public void addJoystickChangedListeners(){listeners.clear();}
+    public void removeJoystickChangedListener(JoystickChangedListener listener){listeners.remove(listener);}
+    public void clearJoystickChangedListener(JoystickChangedListener listener){
+        listeners.clear();
+    }
+    public void handleChangedListener(){
+        for(JoystickChangedListener listener: listeners){
+            listener.changed(valueX,valueY);
         }
-        public void handleChangedListener(){
-            for(JoystickChangedListener listener: listeners){
-                listener.changed(valueX,valueY);
-            }
-        }
+    }
 
-        public JoyStick(Texture circle, Texture curStick){
-            this.circle = circle;
-            this.curStick = curStick;
-            setDefaultWH();
-            setDefaultXY();
-            addListener(new JoyStickInput(this));
-        }
+    public JoyStick(Texture circle, Texture curStick){
+        this.circle = circle;
+        this.curStick = curStick;
+        setDefaultWH();
+        setDefaultXY();
+        addListener(new JoyStickInput(this));
+    }
     public void setDefaultWH(){
         rad = 225;
         setWidth(rad*2);

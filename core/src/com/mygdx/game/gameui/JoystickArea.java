@@ -11,6 +11,7 @@ public class JoystickArea extends Group {
     private JoyStick joystick;
     private JoyStickInput jlistener;
     private final Vector2 tmp = new Vector2();
+
     public JoystickArea(Texture circle, Texture curJoystick, int setX, int setY) {
         joystick = new JoyStick(circle, curJoystick);
         addActor(joystick);
@@ -24,32 +25,36 @@ public class JoystickArea extends Group {
 
     }
 
-    private class AreaListener extends InputListener{
+    private class AreaListener extends InputListener {
 
         @Override
         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-            joystick.parentToLocalCoordinates(tmp.set(x,y));
+            joystick.parentToLocalCoordinates(tmp.set(x, y));
             return super.touchDown(event, tmp.x, tmp.y, pointer, button);
         }
+
         @Override
         public void touchDragged(InputEvent event, float x, float y, int pointer) {
-            joystick.parentToLocalCoordinates(tmp.set(x,y));
+            joystick.parentToLocalCoordinates(tmp.set(x, y));
         }
+
         @Override
         public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-            joystick.parentToLocalCoordinates(tmp.set(x,y));
+            joystick.parentToLocalCoordinates(tmp.set(x, y));
         }
 
     }
 
 
-    public float getValueX(){
+    public float getValueX() {
         return joystick.getValueX();
     }
-    public float getValueY(){
+
+    public float getValueY() {
         return joystick.getValueY();
     }
-    public boolean isTouchStick(){
+
+    public boolean isTouchStick() {
         return joystick.isTouchStick();
     }
 }
