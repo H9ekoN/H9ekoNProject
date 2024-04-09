@@ -7,6 +7,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 import jdk.tools.jlink.internal.Main;
@@ -57,8 +59,12 @@ public class Character {
         Fixture f = body.createFixture(circle, 1f);
         circle.dispose();
 
-        body.setTransform(x, y, 0);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circle;
+        fixtureDef.density = 1.0f;
 
+        body.setTransform(x, y, 0);
+        body.createFixture(fixtureDef).setUserData(this);
         return body;
     }
 

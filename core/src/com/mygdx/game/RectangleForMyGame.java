@@ -15,6 +15,7 @@ public class RectangleForMyGame {
     private float Ypos;
     float width;
     float height;
+    public int material;
 
     public RectangleForMyGame(float x, float y, float width, float height, int material, World world, Texture img) {
         this.img = img;
@@ -23,6 +24,7 @@ public class RectangleForMyGame {
         body = createRectangularBody(x, y, width, height, material, world);
         Xpos = body.getPosition().x;
         Ypos = body.getPosition().y;
+        this.material = material;
     }
 
     public void draw(SpriteBatch batch) {
@@ -43,9 +45,12 @@ public class RectangleForMyGame {
         Body boxBody = world.createBody(boxBodyDef);
         PolygonShape poly = new PolygonShape();
         poly.setAsBox(width / 2, height / 2);
-        boxBody.createFixture(poly, material);
+        boxBody.createFixture(poly, material).setUserData(this);
         poly.dispose();
 
         return boxBody;
+    }
+    public float getY(){
+        return Ypos;
     }
 }
