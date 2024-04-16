@@ -150,21 +150,24 @@ public class MyScreen implements Screen {
         state += 0.1f;
 
         if(Attack[(int) state] == null) {
-            Attack[(int) state] = new MobsAtack(2000, (float) Math.random() * 1200 * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE,  1400 * UNIT_SCALE, 0, -200 * UNIT_SCALE, 30 * UNIT_SCALE, 30 * UNIT_SCALE, StarAttack, world);
-
+            float randomX = (float) Math.random() * 1200 * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
+            if(Math.abs(charfirst.getX()) - Math.abs(randomX)< Math.abs(charsecond.getX() - randomX)) {
+                Attack[(int) state] = new MobsAtack(2000, (float) Math.random() * 1200 * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
+            } else {
+                Attack[(int) state] = new MobsAtack(2000, (float) Math.random() * 1200 * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charsecond.getX() * UNIT_SCALE,charsecond.getY() * UNIT_SCALE, StarAttack, world);
+            }
         }
 
         state = Math.min(state, 99);
 
         for(int i = 0; i<(int) 100; i++){
-            if(Attack[i]!=null && Attack[i].state &&  Attack[i].body!=null) Attack[i].drawAttack(batch);
+            if(Attack[i]!=null && Attack[i].state &&  Attack[i].body!=null) Attack[i].drawAttack(batch, this);
         }
         batch.end();
-
-        box2DDebugRenderer.render(world, camera.combined);
-
         stage.act(delta);
         stage.draw();
+        box2DDebugRenderer.render(world, camera.combined);
+
         for(int i = 0; i<(int) 100; i++){
             if(Attack[i] != null && Attack[i].state == false  && Attack[i].body!=null && Attack[i].state2 == false){
                     world.destroyBody(Attack[i].body);
@@ -199,6 +202,8 @@ public class MyScreen implements Screen {
         world.dispose();
         imgfirst.dispose();
         imgsecond.dispose();
+        StarAttack.dispose();
+        stage.dispose();
         batch.dispose();
     }
 }

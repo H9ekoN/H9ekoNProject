@@ -21,14 +21,15 @@ public class MobsAtack {
     private Timer timer= new Timer();
     public Body body;
     public BodyDef def;
-    private float x, y, dx, dy;
+    private float x, y;
     private World world;
     public boolean state = true;
     public boolean state2 = false;
 
     Texture img, imgAfterAtack;
+    private float bodyX, bodyY;
 
-    public MobsAtack(int time, float x, float y, float dx,float dy, float width, float height, Texture imgAtack, World world){
+    public MobsAtack(int time, float x, float y, float width, float height,float bodyX, float bodyY, Texture imgAtack, World world){
         this.x = x;
         this.y = y;
         this.img = imgAtack;
@@ -36,21 +37,19 @@ public class MobsAtack {
         this.index = index;
         this.width = width;
         this.height = height;
-        this.dx = dx;
-        this.dy = dy;
         this.world = world;
+        this.bodyX = bodyX;
+        this.bodyY = bodyY;
         body = createRectBody(x, y, width, height, imgAtack, world);
     }
 
-    public MobsAtack(int time,float x, float y, float dx,float dy,float radius, Texture imgAtack, World world){
+    public MobsAtack(int time,float x, float y, float radius, float bodyX, float bodyY, Texture imgAtack, World world){
         this.x = x;
         this.y = y;
         this.img = imgAtack;
         this.time = time;
         this.index = index;
         this.radius = radius;
-        this.dy = dy;
-        this.dx = dx;
         this.world = world;
         body = createCircleBody(x, y, radius, imgAtack, world);
     }
@@ -93,7 +92,7 @@ public class MobsAtack {
     }
 
 
-    public void drawAttack(SpriteBatch batch){
+    public void drawAttack(SpriteBatch batch, MyScreen myScreen){
         Thread task = new Thread() {
             @Override
             public void run() {
@@ -102,7 +101,7 @@ public class MobsAtack {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                if(state)body.setLinearVelocity(dx, dy);
+                if(state)body.setLinearVelocity((myScreen.charfirst.getX() - body.getPosition().x)/10, (myScreen.charfirst.getY() - body.getPosition().y)/10);
             }
         };
      batch.draw(img, this.body.getPosition().x - width, this.body.getPosition().y - height, (float)(width * 2), height * 2);
