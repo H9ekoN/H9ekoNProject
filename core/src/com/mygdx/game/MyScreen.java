@@ -13,20 +13,20 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Server;
 import com.mygdx.game.gameui.JoystickArea;
 
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.ArrayList;
+import java.util.Random;
 
 public class MyScreen implements Screen {
     private World world;
@@ -52,10 +52,16 @@ public class MyScreen implements Screen {
     public int Bossid = 0;
     int Bossstate = 0;
     int Time;
-
+    public Client client;
+    public Server server;
+    public int Mod = 1;
+    public Random random = new Random(12);
+    Button buttonleft;
+    Button buttonright;
 
 
     public MyScreen() {
+
         box2DDebugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
@@ -71,6 +77,17 @@ public class MyScreen implements Screen {
 
         world.setContactListener(new MyContactListener());
 
+        Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
+        buttonStyle.up = skin.getDrawable("button.up");
+        buttonStyle.down = skin.getDrawable("button.down");
+        buttonStyle.pressedOffsetX = 1;
+        buttonStyle.checkedOffsetY = -1;
+
+        buttonleft = new Button();
+        buttonright = new Button();
+
+        atlas = new TextureAtlas("ui/button.atlas");
+        skin = new Skin();
 
         charfirst = new Character("Character1", 250 * UNIT_SCALE, 900 * UNIT_SCALE, 80, world, imgfirst);
         charsecond = new Character("Character2", 1400 * UNIT_SCALE, 900 * UNIT_SCALE, 80, world, imgfirst);
@@ -88,8 +105,11 @@ public class MyScreen implements Screen {
         joystickAreafirst = new JoystickArea(circle, curCircle, 10, 10);
         joysticlAreaSecond = new JoystickArea(circle, curCircle, 1700, 10);
 
-        table = new Table();
+
+
+        table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 
         stage.addActor(table);
         stage.addActor(joystickAreafirst);
@@ -99,6 +119,24 @@ public class MyScreen implements Screen {
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(multiplexer);
+        if (Mod == 1) {
+            table.add(buttonleft).width(300).height(300).pad(1000);
+            table.add(buttonright).width(300).height(300).pad(1000);
+            buttonleft.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    table.removeActor(buttonright);
+                    table.removeActor(buttonleft);
+                }
+            });
+            buttonright.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    table.removeActor(buttonleft);
+                    table.removeActor(buttonright);
+                }
+            });
+        }
     }
 
     @Override
@@ -149,12 +187,12 @@ public class MyScreen implements Screen {
         charsecond.draw(batch);
         state += 0.1f;
 
-        if(Attack[(int) state] == null) {
-            float randomX = (float) Math.random() * 1200 * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
-            if(Math.abs(charfirst.getX()) - Math.abs(randomX)< Math.abs(charsecond.getX() - randomX)) {
-                Attack[(int) state] = new MobsAtack(2000, (float) Math.random() * 1200 * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
+        if(Attack[(int) state] == null && Mod == 2) {
+            float randomX = (float) random.nextInt(1200) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
+            if(Math.abs(charfirst.getX()) - Math.abs(randomX) < Math.abs(charsecond.getX() - randomX)) {
+                Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(1200) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
             } else {
-                Attack[(int) state] = new MobsAtack(2000, (float) Math.random() * 1200 * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charsecond.getX() * UNIT_SCALE,charsecond.getY() * UNIT_SCALE, StarAttack, world);
+                Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(1200) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charsecond.getX() * UNIT_SCALE,charsecond.getY() * UNIT_SCALE, StarAttack, world);
             }
         }
 
