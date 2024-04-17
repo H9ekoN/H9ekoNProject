@@ -24,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Server;
+import com.mygdx.game.KryoNet.client.ClientProgram;
+import com.mygdx.game.KryoNet.server.ServerProgram;
 import com.mygdx.game.gameui.JoystickArea;
 
 import java.util.Random;
@@ -52,12 +54,14 @@ public class MyScreen implements Screen {
     public int Bossid = 0;
     int Bossstate = 0;
     int Time;
-    public Client client;
-    public Server server;
     public int Mod = 1;
     public Random random = new Random(12);
     Button buttonleft;
     Button buttonright;
+    public int Online = 0;
+    ClientProgram client;
+    ServerProgram server;
+    MyScreen myScreen = this;
 
 
     public MyScreen() {
@@ -77,17 +81,19 @@ public class MyScreen implements Screen {
 
         world.setContactListener(new MyContactListener());
 
+        atlas = new TextureAtlas("ui/button.atlas");
+        skin = new Skin();
+        skin.addRegions(atlas);
+
         Button.ButtonStyle buttonStyle = new Button.ButtonStyle();
         buttonStyle.up = skin.getDrawable("button.up");
         buttonStyle.down = skin.getDrawable("button.down");
         buttonStyle.pressedOffsetX = 1;
         buttonStyle.checkedOffsetY = -1;
 
-        buttonleft = new Button();
-        buttonright = new Button();
+        buttonleft = new Button(buttonStyle);
+        buttonright = new Button(buttonStyle);
 
-        atlas = new TextureAtlas("ui/button.atlas");
-        skin = new Skin();
 
         charfirst = new Character("Character1", 250 * UNIT_SCALE, 900 * UNIT_SCALE, 80, world, imgfirst);
         charsecond = new Character("Character2", 1400 * UNIT_SCALE, 900 * UNIT_SCALE, 80, world, imgfirst);
@@ -104,8 +110,8 @@ public class MyScreen implements Screen {
         Texture curCircle = new Texture("JoyStick/stick.png");
         joystickAreafirst = new JoystickArea(circle, curCircle, 10, 10);
         joysticlAreaSecond = new JoystickArea(circle, curCircle, 1700, 10);
-
-
+        joystickAreafirst.setVisible(false);
+        joysticlAreaSecond.setVisible(false);
 
         table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -120,11 +126,19 @@ public class MyScreen implements Screen {
         multiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(multiplexer);
         if (Mod == 1) {
-            table.add(buttonleft).width(300).height(300).pad(1000);
-            table.add(buttonright).width(300).height(300).pad(1000);
+            table.add(buttonleft).width(300).height(300).pad(800);
+            table.add(buttonright).width(300).height(300).pad(800);
             buttonleft.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    Mod = 2;
+                    Online = 1;
+                    try {
+                        server = new ServerProgram(myScreen);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    joystickAreafirst.setVisible(true);
                     table.removeActor(buttonright);
                     table.removeActor(buttonleft);
                 }
@@ -132,6 +146,14 @@ public class MyScreen implements Screen {
             buttonright.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    Mod = 2;
+                    Online = 2;
+                    try {
+                        client = new ClientProgram(myScreen);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    joysticlAreaSecond.setVisible(true);
                     table.removeActor(buttonleft);
                     table.removeActor(buttonright);
                 }

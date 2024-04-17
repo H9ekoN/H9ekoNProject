@@ -16,7 +16,7 @@ import jdk.tools.jlink.internal.Main;
 
 public class Character {
     private String name;
-    private Body body;
+    public Body body;
     private Texture img;
     public BodyDef def;
     public static float RADIUS;
