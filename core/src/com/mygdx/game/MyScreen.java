@@ -37,7 +37,7 @@ public class MyScreen implements Screen {
     private OrthogonalTiledMapRenderer renderer;
     public static final float UNIT_SCALE = 1f / 16f;
     private Box2DDebugRenderer box2DDebugRenderer;
-    public Texture imgfirst, imgsecond, StarAttack;
+    public Texture imgfirst, imgsecond, StarAttack, MobsTexture;
     private SpriteBatch batch;
     private BitmapFont font;
     private Stage stage = new Stage();
@@ -58,9 +58,10 @@ public class MyScreen implements Screen {
     public Random random = new Random(12);
     Button buttonleft;
     Button buttonright;
+    Button buttoncenter;
     public int Online = 0;
-    ClientProgram client;
-    ServerProgram server;
+    ClientProgram clientP;
+    public ServerProgram serverP;
     MyScreen myScreen = this;
 
 
@@ -69,13 +70,15 @@ public class MyScreen implements Screen {
         box2DDebugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        imgfirst = new Texture("MasterFish.png");
-        imgsecond = new Texture("monster1stay1.png");
+        imgfirst = new Texture("HeartRed.png");
+        imgsecond = new Texture("HeartPurple.png");
+        MobsTexture = new Texture("monster1stay1.png");
+
         StarAttack = new Texture("Star.png");
 
-        map = new TmxMapLoader().load("map.tmx");
+        map = new TmxMapLoader().load("space.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, UNIT_SCALE);
-        camera.setToOrtho(false, 100, 100);
+        camera.setToOrtho(false, 200, 150);
 
         world = new World(new Vector2(0, 0), true);
 
@@ -93,18 +96,19 @@ public class MyScreen implements Screen {
 
         buttonleft = new Button(buttonStyle);
         buttonright = new Button(buttonStyle);
+        buttoncenter = new Button(buttonStyle);
 
 
-        charfirst = new Character("Character1", 250 * UNIT_SCALE, 900 * UNIT_SCALE, 80, world, imgfirst);
-        charsecond = new Character("Character2", 1400 * UNIT_SCALE, 900 * UNIT_SCALE, 80, world, imgfirst);
-        mobsfirst = new Mobs("mob", 784 * UNIT_SCALE, 1280 * UNIT_SCALE, 150, world, imgsecond);
+        charfirst = new Character("Character1", 600 * UNIT_SCALE, 900 * UNIT_SCALE, 90, world, imgfirst);
+        charsecond = new Character("Character2", 2600 * UNIT_SCALE, 900 * UNIT_SCALE, 90, world, imgsecond);
+        mobsfirst = new Mobs("mob", 1600 * UNIT_SCALE, 2100 * UNIT_SCALE, 200, world, MobsTexture);
 
-        bord1 = new RectangleForMyGame(-1 * UNIT_SCALE, -1 * UNIT_SCALE, 3000 * UNIT_SCALE, 1 * UNIT_SCALE, 1, world, null);
-        bord2 = new RectangleForMyGame(-5 * UNIT_SCALE, 2 * UNIT_SCALE, 1 * UNIT_SCALE, 3000 * UNIT_SCALE, 1, world, null);
-        bord3 = new RectangleForMyGame(1600 * UNIT_SCALE, 2 * UNIT_SCALE, 1 * UNIT_SCALE, 3000 * UNIT_SCALE, 1, world, null);
-        bord4 = new RectangleForMyGame(-7 * UNIT_SCALE, 1500 * UNIT_SCALE, 3000 * UNIT_SCALE, 1 * UNIT_SCALE, 0, world, null);
+        bord1 = new RectangleForMyGame(-1 * UNIT_SCALE, -1 * UNIT_SCALE, 5800 * UNIT_SCALE, 1 * UNIT_SCALE, 1, world, null);
+        bord2 = new RectangleForMyGame(220 * UNIT_SCALE, 2 * UNIT_SCALE, 1 * UNIT_SCALE, 3500 * UNIT_SCALE, 1, world, null);
+        bord3 = new RectangleForMyGame(3000 * UNIT_SCALE, 2 * UNIT_SCALE, 1 * UNIT_SCALE, 3500 * UNIT_SCALE, 1, world, null);
+        bord4 = new RectangleForMyGame(-7 * UNIT_SCALE, 2400 * UNIT_SCALE, 5800 * UNIT_SCALE, 1 * UNIT_SCALE, 0, world, null);
 
-        line = new RectangleForMyGame(0, 1100 * UNIT_SCALE, 3300 * UNIT_SCALE, 20 * UNIT_SCALE, 0, world, new Texture("whiteline.png"));
+        line = new RectangleForMyGame(0, 1800 * UNIT_SCALE, 5800 * UNIT_SCALE, 20 * UNIT_SCALE, 0, world, new Texture("whiteline.png"));
 
         Texture circle = new Texture("JoyStick/circle.png");
         Texture curCircle = new Texture("JoyStick/stick.png");
@@ -126,39 +130,105 @@ public class MyScreen implements Screen {
         multiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(multiplexer);
         if (Mod == 1) {
-            table.add(buttonleft).width(300).height(300).pad(800);
-            table.add(buttonright).width(300).height(300).pad(800);
-            buttonleft.addListener(new ClickListener() {
+            table.add(buttonleft).width(300).height(300).pad(300);
+            table.add(buttoncenter).width(300).height(300).pad(300);
+            table.add(buttonright).width(300).height(300).pad(300);
+            buttoncenter.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Mod = 2;
-                    Online = 1;
-                    try {
-                        server = new ServerProgram(myScreen);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    Online = 3;
+                    world.destroyBody(charsecond.body);
+                    charsecond = null;
                     joystickAreafirst.setVisible(true);
                     table.removeActor(buttonright);
                     table.removeActor(buttonleft);
+                    table.removeActor(buttoncenter);
+                    Mod = 3;
+
+                }
+            });
+            buttonleft.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Online = 1;
+                    Thread thread = new Thread(() -> {
+                        try {
+                            serverP = new ServerProgram(myScreen);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    });
+                    thread.start();
+                    joystickAreafirst.setVisible(true);
+                    table.removeActor(buttonright);
+                    table.removeActor(buttonleft);
+                    table.removeActor(buttoncenter);
                 }
             });
             buttonright.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Mod = 2;
                     Online = 2;
-                    try {
-                        client = new ClientProgram(myScreen);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    Thread thread = new Thread(() -> {
+                        try {
+                            clientP = new ClientProgram(myScreen);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    thread.start();
                     joysticlAreaSecond.setVisible(true);
                     table.removeActor(buttonleft);
                     table.removeActor(buttonright);
+                    table.removeActor(buttoncenter);
                 }
             });
         }
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                for(;true;){
+                    world.step(1, 4, 4);
+                    state += 0.1f;
+                    state = Math.min(state, 99);
+                    if(Attack[(int) state] == null && Mod == 3 && charsecond!=null){
+                        float randomX = (float) random.nextInt(2800) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
+                        if(Math.abs(charfirst.getX()) - Math.abs(randomX) < Math.abs(charsecond.getX() - randomX)) {
+                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2800) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
+                        }
+                    }
+                    if(Attack[(int) state] == null && Mod == 2) {
+                        float randomX = (float) random.nextInt(2800) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
+                        if(Math.abs(charfirst.getX()) - Math.abs(randomX) < Math.abs(charsecond.getX() - randomX)) {
+                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2800) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
+                        } else {
+                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2800) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charsecond.getX() * UNIT_SCALE,charsecond.getY() * UNIT_SCALE, StarAttack, world);
+                        }
+                    } else if (Attack[(int) state] == null && Mod == 3) {
+                        float randomX = (float) random.nextInt(2800) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
+                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2800) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
+                    }
+                    for(int i = 0; i<(int) 100; i++){
+                        if(Attack[i]!=null && Attack[i].state &&  Attack[i].body!=null) {
+                            if(Attack[i].state)Attack[i].body.setLinearVelocity((myScreen.charfirst.getX() - Attack[i].body.getPosition().x)/60, (myScreen.charfirst.getY() - Attack[i].body.getPosition().y)/60);
+                        }
+                    }
+                    for(int i = 0; i<(int) 100; i++){
+                        if(Attack[i] != null && !Attack[i].state && Attack[i].body!=null && !Attack[i].state2){
+                            world.destroyBody(Attack[i].body);
+                            Attack[i].state2 = true;
+                        }
+                    }
+                    try {
+                        Thread.sleep(25);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        };
+        thread.start();
     }
 
     @Override
@@ -172,53 +242,42 @@ public class MyScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (joystickAreafirst.isTouchStick()) {
-            float x = joystickAreafirst.getValueX() * 30;
-            float y = joystickAreafirst.getValueY() * 30;
+            float x = joystickAreafirst.getValueX() * 50;
+            float y = joystickAreafirst.getValueY() * 50;
             if (charfirst.getLive()) {
                 charfirst.setVelocity(x, y);
             }
         }
-
-        if (joystickAreafirst.isTouchStick() == false) {
+        if (!joystickAreafirst.isTouchStick()) {
             charfirst.setVelocity(0, 0);
         }
 
         if (joysticlAreaSecond.isTouchStick()) {
-            float x = joysticlAreaSecond.getValueX() * 30;
-            float y = joysticlAreaSecond.getValueY() * 30;
-            if (charsecond.getLive()) {
-                charsecond.setVelocity(x, y);
+            float x = joysticlAreaSecond.getValueX() * 50;
+            float y = joysticlAreaSecond.getValueY() * 50;
+            if (charsecond != null) {
+                if(charsecond.getLive()) {
+                    charsecond.setVelocity(x, y);
+                }
             }
         }
-
-        if (joysticlAreaSecond.isTouchStick() == false) {
-            charsecond.setVelocity(0, 0);
+        if (charsecond != null) {
+            if (!joysticlAreaSecond.isTouchStick()) {
+                charsecond.setVelocity(0, 0);
+            }
         }
-
         camera.update();
         renderer.setView(camera);
         renderer.render();
 
-        world.step(delta, 4, 4);
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         mobsfirst.draw(batch);
-
         charfirst.draw(batch);
-        charsecond.draw(batch);
-        state += 0.1f;
 
-        if(Attack[(int) state] == null && Mod == 2) {
-            float randomX = (float) random.nextInt(1200) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
-            if(Math.abs(charfirst.getX()) - Math.abs(randomX) < Math.abs(charsecond.getX() - randomX)) {
-                Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(1200) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
-            } else {
-                Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(1200) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charsecond.getX() * UNIT_SCALE,charsecond.getY() * UNIT_SCALE, StarAttack, world);
-            }
+        if (charsecond != null) {
+            charsecond.draw(batch);
         }
-
-        state = Math.min(state, 99);
 
         for(int i = 0; i<(int) 100; i++){
             if(Attack[i]!=null && Attack[i].state &&  Attack[i].body!=null) Attack[i].drawAttack(batch, this);
@@ -227,13 +286,6 @@ public class MyScreen implements Screen {
         stage.act(delta);
         stage.draw();
         box2DDebugRenderer.render(world, camera.combined);
-
-        for(int i = 0; i<(int) 100; i++){
-            if(Attack[i] != null && Attack[i].state == false  && Attack[i].body!=null && Attack[i].state2 == false){
-                    world.destroyBody(Attack[i].body);
-                    Attack[i].state2 = true;
-            }
-        }
     }
 
     @Override

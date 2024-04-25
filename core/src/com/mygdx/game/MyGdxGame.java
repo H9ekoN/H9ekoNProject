@@ -6,10 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MyGdxGame extends Game {
-
+    MyScreen screen;
     @Override
     public void create() {
-        MyScreen screen = new MyScreen();
+        screen = new MyScreen();
         setScreen(screen);
     }
 
@@ -21,5 +21,9 @@ public class MyGdxGame extends Game {
     @Override
     public void dispose() {
         super.dispose();
+    }
+    @Override
+    public void pause(){
+        screen.serverP.server.close();
     }
 }

@@ -21,7 +21,7 @@ public class MobsAtack {
     private Timer timer= new Timer();
     public Body body;
     public BodyDef def;
-    private float x, y;
+    public float x, y;
     private World world;
     public boolean state = true;
     public boolean state2 = false;
@@ -101,11 +101,9 @@ public class MobsAtack {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                if(state)body.setLinearVelocity((myScreen.charfirst.getX() - body.getPosition().x)/10, (myScreen.charfirst.getY() - body.getPosition().y)/10);
             }
         };
      batch.draw(img, this.body.getPosition().x - width, this.body.getPosition().y - height, (float)(width * 2), height * 2);
-     // timer.schedule(task, time);
         task.start();
     }
     public void delete(){

@@ -9,32 +9,32 @@ import com.mygdx.game.MyScreen;
 import java.util.Date;
 
 public class ServerProgram extends Listener {
-    static Server server;
+    public Server server;
     MyScreen myScreen;
-    static int udpPort = 27777, tcpPort = 27777;
+    static int udpPort = 27960, tcpPort = 27960;
     Connection character;
     public ServerProgram(MyScreen myScreen) throws Exception{
         this.myScreen = myScreen;
         server = new Server();
-        server.getKryo().register(Package.class);
+        server.getKryo().register(PacketMessage.class);
         server.bind(tcpPort, udpPort);
-
         server.start();
         server.addListener(this);
     }
-
+@Override
     public void connected(Connection c){
         character = c;
         PacketMessage packetMessage = new PacketMessage();
         packetMessage.x = myScreen.charfirst.getX();
         packetMessage.y = myScreen.charfirst.getY();
         c.sendTCP(packetMessage);
+        myScreen.Mod = 2;
     }
-
+@Override
     public void received(Connection connection, Object object) {
         if (object instanceof PacketMessage){
             PacketMessage packetMessage = (PacketMessage) object;
-            myScreen.charfirst.body.setTransform(packetMessage.x, packetMessage.y, 0);
+            myScreen.charsecond.body.setTransform(packetMessage.x, packetMessage.y, 0);
             packetMessage.x = myScreen.charfirst.getX();
             packetMessage.y = myScreen.charfirst.getY();
             connection.sendTCP(packetMessage);
