@@ -1,7 +1,0 @@
-button.png
-size:70,36
-repeat:none
-button.down
-bounds:2,2,32,32
-button.up
-bounds:36,2,32,32

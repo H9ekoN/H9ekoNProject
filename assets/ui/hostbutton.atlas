@@ -1,0 +1,7 @@
+hostbutton.png
+size:1024,128
+repeat:none
+blaster
+bounds:2,2,320,64
+blaster2
+bounds:324,2,320,64
