@@ -73,17 +73,22 @@ public class MyScreen implements Screen {
     public ServerProgram serverP;
     MyScreen myScreen = this;
     public int blasterID = 0;
-    public BlasterAttack[] blasterAttacks = new BlasterAttack[20];
+    public BlasterAttack[] blasterAttacks = new BlasterAttack[3];
     public float W;
     public float H;
     public RayCastCallback callback = (fixture, point, normal, fraction) -> {
-        if (fixture.getUserData() instanceof Character){
-            Character tbb = (Character)(fixture.getUserData());
+        if (fixture.getUserData() instanceof Character) {
+            Character tbb = (Character) (fixture.getUserData());
             tbb.die();
         }
         return 1;
     };
 
+    public boolean hit(float x1, float y1, float r1, float x2, float y2, float r2) {
+        float dx = Math.abs(x1 - x2);
+        float dy = Math.abs(y1 - y2);
+        return Math.sqrt(dx * dx + dy * dy) <= r1 + r2;
+    }
 
     public MyScreen() {
 
@@ -143,7 +148,6 @@ public class MyScreen implements Screen {
         charfirst = new Character("Character1", 600 * UNIT_SCALE, 900 * UNIT_SCALE, 90, world, imgfirst);
         charsecond = new Character("Character2", 2600 * UNIT_SCALE, 900 * UNIT_SCALE, 90, world, imgsecond);
         mobsfirst = new Mobs("mob", 1600 * UNIT_SCALE, 2070 * UNIT_SCALE, 220, world, MobsTexture);
-
 
 
         bord1 = new RectangleForMyGame(-1 * UNIT_SCALE, -1 * UNIT_SCALE, 5800 * UNIT_SCALE, 1 * UNIT_SCALE, 1, world, null);
@@ -225,14 +229,14 @@ public class MyScreen implements Screen {
                     table.removeActor(buttoncenter);
                 }
             });
-            for(int i = 0; i<blasterAttacks.length; i++){
-                blasterAttacks[i] = new BlasterAttack(0,0,0);
+            for (int i = 0; i < blasterAttacks.length; i++) {
+                blasterAttacks[i] = new BlasterAttack(0, 0, 0);
             }
         }
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
             @Override
             public void run() {
-                for(;true;) {
+                for (; true; ) {
                     world.step(1, 4, 4);
                     state += 0.1f;
                     state = Math.min(state, 16);
@@ -244,29 +248,30 @@ public class MyScreen implements Screen {
                     }
 
 
-                    if(Attack[(int) state] == null && Mod == 2) {
+                    if (Attack[(int) state] == null && Mod == 2) {
                         float randomX = (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
-                        if(Math.abs(charfirst.getX()) - Math.abs(randomX) < Math.abs(charsecond.getX() - randomX)) {
-                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
+                        if (Math.abs(charfirst.getX()) - Math.abs(randomX) < Math.abs(charsecond.getX() - randomX)) {
+                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE, charfirst.getY() * UNIT_SCALE, StarAttack, world);
                         } else {
-                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charsecond.getX() * UNIT_SCALE,charsecond.getY() * UNIT_SCALE, StarAttack, world);
+                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charsecond.getX() * UNIT_SCALE, charsecond.getY() * UNIT_SCALE, StarAttack, world);
                         }
                     } else if (Attack[(int) state] == null && Mod == 3) {
                         float randomX = (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE;
-                            Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE,charfirst.getY() * UNIT_SCALE, StarAttack, world);
+                        Attack[(int) state] = new MobsAtack(2000, (float) random.nextInt(2400) * UNIT_SCALE + 200 * UNIT_SCALE + 50 * UNIT_SCALE, 1400 * UNIT_SCALE, 50 * UNIT_SCALE, 50 * UNIT_SCALE, charfirst.getX() * UNIT_SCALE, charfirst.getY() * UNIT_SCALE, StarAttack, world);
                     }
-                    for(int i = 0; i< 16; i++){
-                        if(Attack[i]!=null && Attack[i].state &&  Attack[i].body!=null) {
-                            if(Attack[i].state)Attack[i].body.setLinearVelocity((myScreen.charfirst.getX() - Attack[i].body.getPosition().x)/130, (myScreen.charfirst.getY() - Attack[i].body.getPosition().y)/130);
+                    for (int i = 0; i < 16; i++) {
+                        if (Attack[i] != null && Attack[i].state && Attack[i].body != null) {
+                            if (Attack[i].state)
+                                Attack[i].body.setLinearVelocity((myScreen.charfirst.getX() - Attack[i].body.getPosition().x) / 130, (myScreen.charfirst.getY() - Attack[i].body.getPosition().y) / 130);
                         }
                     }
-                    for(int i = 0; i< 16; i++){
-                        if(Attack[i] != null && !Attack[i].state && Attack[i].body!=null && !Attack[i].state2){
+                    for (int i = 0; i < 16; i++) {
+                        if (Attack[i] != null && !Attack[i].state && Attack[i].body != null && !Attack[i].state2) {
                             world.destroyBody(Attack[i].body);
                             Attack[i].state2 = true;
                         }
                     }
-                    if (random.nextInt(10) ==0 && (Mod == 2 || Mod == 3)) {
+                    if (random.nextInt(10) == 0 && (Mod == 2 || Mod == 3)) {
                         blasterID++;
                         if (blasterID >= blasterAttacks.length) {
                             blasterID = 0;
@@ -323,7 +328,7 @@ public class MyScreen implements Screen {
             float x = joysticlAreaSecond.getValueX() * 50;
             float y = joysticlAreaSecond.getValueY() * 50;
             if (charsecond != null) {
-                if(charsecond.getLive()) {
+                if (charsecond.getLive()) {
                     charsecond.setVelocity(x, y);
                 }
             }
@@ -349,42 +354,62 @@ public class MyScreen implements Screen {
             charsecond.draw(batch);
         }
 
-        for(int i = 0; i<(int) 100; i++){
-            if(Attack[i]!=null && Attack[i].state &&  Attack[i].body!=null) Attack[i].drawAttack(batch, this);
+        for (int i = 0; i < (int) 100; i++) {
+            if (Attack[i] != null && Attack[i].state && Attack[i].body != null)
+                Attack[i].drawAttack(batch, this);
         }
         for (BlasterAttack attack : blasterAttacks) {
             if (attack.live) {
                 float vx = (float) Math.sin(attack.rotate * Math.PI / 180f), vy = (float) Math.cos(attack.rotate * Math.PI / 180f);
-                batch.draw(RegionBlaster, (attack.BlusterX + (-vx * (1 - attack.state)) * 100) * UNIT_SCALE, (attack.BlusterY + (-vy * (1 - attack.state)) * 100) * UNIT_SCALE, UNIT_SCALE * 128, UNIT_SCALE * 128, UNIT_SCALE * 256, UNIT_SCALE * 256, 1, 1,360 - attack.rotate - 50);
+                batch.draw(RegionBlaster, (attack.BlusterX + (-vx * (1 - attack.state)) * 100) * UNIT_SCALE, (attack.BlusterY + (-vy * (1 - attack.state)) * 100) * UNIT_SCALE, UNIT_SCALE * 128, UNIT_SCALE * 128, UNIT_SCALE * 256, UNIT_SCALE * 256, 1, 1, 360 - attack.rotate - 50);
             }
         }
 
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        if((Mod == 2) || (Mod == 3)) for (BlasterAttack blasterAttack : blasterAttacks) {
+        if ((Mod == 2) || (Mod == 3)) for (BlasterAttack blasterAttack : blasterAttacks) {
             // shapeRenderer.rect(blasterAttack.BlusterX, blasterAttack.BlusterY, 200 * blasterAttack.state + 1, 200 * blasterAttack.state + 1);
             if (blasterAttack.live) {
                 float vx = (float) Math.sin(blasterAttack.rotate * Math.PI / 180f), vy = (float) Math.cos(blasterAttack.rotate * Math.PI / 180f);
-                shapeRenderer.setColor(0.7f * 0.7f, 0.7f* 0.7f, 0.9f * 0.9f, 1);
+                shapeRenderer.setColor(0.7f * 0.7f, 0.7f * 0.7f, 0.9f * 0.9f, 1);
+                if (blasterAttack.state > 0.8) shapeRenderer.setColor(0.9f * 0.7f, 0.7f * 0.2f, 0.7f * 0.2f, 1);
                 shapeRenderer.circle((blasterAttack.BlusterX + 128 + (vx * 140) + (-vx * (1 - blasterAttack.state)) * 100) * UNIT_SCALE, (blasterAttack.BlusterY + 128 + vy * 140 + (-vy * (1 - blasterAttack.state)) * 100) * UNIT_SCALE, (blasterAttack.state * 64) * UNIT_SCALE);
-                blasterLineWidthX1 = (blasterAttack.BlusterX + 128 + vx * 140 + (-vx * (1 - blasterAttack.state))) * 100 * UNIT_SCALE;
-                blasterLineWidthX2  = (blasterAttack.BlusterX + 128 + vx * 140 + (-vx * (1 - blasterAttack.state)) * 100 + vx * W * 2) * UNIT_SCALE;
+
+                blasterLineWidthX1 = (blasterAttack.BlusterX + 128 + vx * 140 + (-vx * (1 - blasterAttack.state)) * 100) * UNIT_SCALE;
+                blasterLineWidthX2 = (blasterAttack.BlusterX + 128 + vx * 140 + (-vx * (1 - blasterAttack.state)) * 100 + vx * W * 2) * UNIT_SCALE;
                 blasterLineWidthY1 = (blasterAttack.BlusterY + 128 + vy * 140 + (-vy * (1 - blasterAttack.state)) * 100) * UNIT_SCALE;
                 blasterLineWidthY2 = (blasterAttack.BlusterY + 128 + vy * 140 + (-vy * (1 - blasterAttack.state)) * 100 + vy * W * 2) * UNIT_SCALE;
 
                 v1.set(blasterLineWidthX1, blasterLineWidthY1);
                 v2.set(blasterLineWidthX2, blasterLineWidthY2);
-                world.rayCast(callback, v1, v2);
+                float x = blasterLineWidthX1, y = blasterLineWidthY1;
+
+                //world.rayCast(callback, v1, v2);
+                for (int i = 0; i < 100; i++) {
+                    x += vx * 10;
+                    y += vy * 10;
+                    if (blasterAttack.state > 0.8) {
+                        if (Mod == 3) {
+                            if (hit(x, y, 5 * UNIT_SCALE, charfirst.getX(), charfirst.getY(), charfirst.getRADIUS() * UNIT_SCALE)) {
+                                charfirst.die();
+                            }
+
+                        } else if (Mod == 2) {
+                            if (hit(x, y, 5 * UNIT_SCALE, charfirst.getX(), charfirst.getY(), charfirst.getRADIUS() * UNIT_SCALE)) {
+                                charfirst.die();
+                            }
+                            if (hit(x, y, 5 * UNIT_SCALE, charsecond.getX(), charsecond.getY(), charsecond.getRADIUS() * UNIT_SCALE)) {
+                                charsecond.die();
+                            }
+                        }
+                    }
+                }
 
                 shapeRenderer.rectLine(blasterLineWidthX1, blasterLineWidthY1, blasterLineWidthX2, blasterLineWidthY2, (blasterAttack.state * 32) * UNIT_SCALE);
                 shapeRenderer.setColor(0.8f * 0.7f, 0.8f * 0.7f, 0.9f * 0.7f, 1);
+                if (blasterAttack.state > 0.8) shapeRenderer.setColor(0.9f * 0.7f, 0.2f * 0.7f, 0.2f * 0.7f, 1);
                 shapeRenderer.circle((blasterAttack.BlusterX + 128 + vx * 140 + (-vx * (1 - blasterAttack.state)) * 100) * UNIT_SCALE, (blasterAttack.BlusterY + 128 + vy * 140 + (-vy * (1 - blasterAttack.state)) * 100) * UNIT_SCALE, (blasterAttack.state * 32) * UNIT_SCALE);
                 shapeRenderer.rectLine((blasterAttack.BlusterX + 128 + vx * 140 + (-vx * (1 - blasterAttack.state)) * 100) * UNIT_SCALE, (blasterAttack.BlusterY + 128 + vy * 140 + (-vy * (1 - blasterAttack.state)) * 100) * UNIT_SCALE, (blasterAttack.BlusterX + 128 + vx * 140 + (-vx * (1 - blasterAttack.state)) * 100 + vx * W * 2) * UNIT_SCALE, (blasterAttack.BlusterY + 128 + vy * 140 + (-vy * (1 - blasterAttack.state)) * 100 + vy * W * 2) * UNIT_SCALE, (blasterAttack.state * 16) * UNIT_SCALE);
-                if (Mod == 2){
-
-                } else if (Mod == 3) {
-
-                }
             }
         }
         shapeRenderer.end();

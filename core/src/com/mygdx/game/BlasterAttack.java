@@ -13,12 +13,12 @@ public class BlasterAttack {
     }
     public void math(){
         if (!mode){
-            state+=(1-state)/3f;
+            state+=(1-state)/30f;
             if (state >0.95f){
                 mode = true;
             }
         } else {
-            state+=(-state)/10f;
+            state+=(-state)/3f;
             if (state < 0.05f){
                 live = false;
                 mode = false;
