@@ -54,7 +54,7 @@ public class MyScreen implements Screen {
     private JoystickArea joystickAreafirst, joysticlAreaSecond;
     private BodyDef groundBodyDef = new BodyDef();
     private RectangleForMyGame bord1, bord2, bord3, bord4, line;
-    private MobsAtack[] Attack = new MobsAtack[100];
+    private MobsAtack[] Attack = new MobsAtack[60];
     public float state = 0;
     public float gravitationstate = 0;
     public int Bossid = 0;
@@ -64,18 +64,18 @@ public class MyScreen implements Screen {
     public int Mod = 1;
     public ShapeRenderer shapeRenderer = new ShapeRenderer();
     public Random random = new Random();
-    Button buttonleft;
-    Button buttonright;
-    Button buttoncenter;
+    private Button buttonleft;
+    private Button buttonright;
+    private Button buttoncenter;
     public int Online = 0;
-    ClientProgram clientP;
-    TextureRegion RegionBlaster;
+    private ClientProgram clientP;
+    private TextureRegion RegionBlaster;
     public ServerProgram serverP;
-    MyScreen myScreen = this;
-    public int blasterID = 0;
-    public BlasterAttack[] blasterAttacks = new BlasterAttack[3];
-    public float W;
-    public float H;
+    private MyScreen myScreen = this;
+    private int blasterID = 0;
+    private BlasterAttack[] blasterAttacks = new BlasterAttack[3];
+    private float W;
+    private float H;
     public RayCastCallback callback = (fixture, point, normal, fraction) -> {
         if (fixture.getUserData() instanceof Character) {
             Character tbb = (Character) (fixture.getUserData());
@@ -354,7 +354,7 @@ public class MyScreen implements Screen {
             charsecond.draw(batch);
         }
 
-        for (int i = 0; i < (int) 100; i++) {
+        for (int i = 0; i < (int) Attack.length; i++) {
             if (Attack[i] != null && Attack[i].state && Attack[i].body != null)
                 Attack[i].drawAttack(batch, this);
         }
@@ -417,7 +417,6 @@ public class MyScreen implements Screen {
         batch.end();
         stage.act(delta);
         stage.draw();
-        box2DDebugRenderer.render(world, camera.combined);
     }
 
     @Override

@@ -11,7 +11,7 @@ public class JoyStick extends Actor {
     private Texture circle, curStick;
     private boolean isTouchStick = false;
     private float rad = 275;
-    private static final float currad = 75;
+    private static final float currad = 175;
     private float curX = 0;
     private float curY = 0;
     private float inverseRad;
@@ -49,7 +49,7 @@ public class JoyStick extends Actor {
         addListener(new JoyStickInput(this));
     }
     public void setDefaultWH(){
-        rad = 225;
+        rad = 205;
         setWidth(rad*2);
         setHeight(rad*2);
     }
