@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -70,7 +71,8 @@ public class MyScreen extends Game implements Screen{
     private Texture[] MobsTextures = new Texture[6];
     private int AnimationStateRight = -1;
     private int AnimationStateLeft = -1;
-    private Sound soundtouch, blaster, star;
+    private Sound soundtouch, blaster;
+    private Sound soundsao;
     private TextureAtlas restaratlas;
 
 
@@ -176,6 +178,7 @@ public class MyScreen extends Game implements Screen{
 
         soundtouch = Gdx.audio.newSound(Gdx.files.internal("sounds/touch.mp3"));
         blaster = Gdx.audio.newSound(Gdx.files.internal("sounds/blaster.mp3"));
+        soundsao = Gdx.audio.newSound(Gdx.files.internal("sounds/sao.mp3"));
 
         Texture circle = new Texture("JoyStick/circle.png");
         Texture curCircle = new Texture("JoyStick/stick.png");
@@ -205,6 +208,7 @@ public class MyScreen extends Game implements Screen{
                     Online = 3;
                     world.destroyBody(charsecond.body);
                     charsecond = null;
+                    soundsao.play();
                     joystickAreafirst.setVisible(true);
                     table.removeActor(buttonright);
                     table.removeActor(buttonleft);
@@ -226,6 +230,7 @@ public class MyScreen extends Game implements Screen{
 
                     });
                     thread.start();
+                    soundsao.play();
                     joystickAreafirst.setVisible(true);
                     table.removeActor(buttonright);
                     table.removeActor(buttonleft);
@@ -245,6 +250,7 @@ public class MyScreen extends Game implements Screen{
                         }
                     });
                     thread.start();
+                    soundsao.play();
                     joysticlAreaSecond.setVisible(true);
                     table.removeActor(buttonleft);
                     table.removeActor(buttonright);
@@ -499,8 +505,10 @@ public class MyScreen extends Game implements Screen{
                         if (Mod == 3 && raz) {
                             if (hit(x, y, 5 * UNIT_SCALE, charfirst.getX(), charfirst.getY(), charfirst.getRADIUS() * UNIT_SCALE)) {
                                 charfirst.die();
+                                soundsao.pause();
                                 stateMod = true;
-                                table.add(RestartButton);
+                                table.setBounds(-1130, -50,  Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                                table.add(RestartButton).width(600).height(128);
                                 RestartButton.addListener(new ClickListener(){
                                     @Override
                                     public void clicked(InputEvent event, float x, float y) {
@@ -510,7 +518,6 @@ public class MyScreen extends Game implements Screen{
                                         Mod = 1;
                                     }
                                 });
-                                table.add(RestartButton).width(600).height(128);
                                 raz = false;
                             }
 
@@ -518,7 +525,9 @@ public class MyScreen extends Game implements Screen{
                             if (hit(x, y, 5 * UNIT_SCALE, charfirst.getX(), charfirst.getY(), charfirst.getRADIUS() * UNIT_SCALE)) {
                                 charfirst.die();
                                 stateMod = true;
-                                table.add(RestartButton);
+                                soundsao.pause();
+                                table.setBounds(-200, -200,  Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                                table.add(RestartButton).width(600).height(128);
                                 RestartButton.addListener(new ClickListener(){
                                     @Override
                                     public void clicked(InputEvent event, float x, float y) {
@@ -528,11 +537,11 @@ public class MyScreen extends Game implements Screen{
                                         Mod = 1;
                                     }
                                 });
-                                table.add(RestartButton).width(600).height(128);
                                 raz = false;
                             }
                             if (hit(x, y, 5 * UNIT_SCALE, charsecond.getX(), charsecond.getY(), charsecond.getRADIUS() * UNIT_SCALE)) {
                                 charsecond.die();
+                                soundsao.pause();
                                 stateMod = true;
                                 table.add(RestartButton);
                                 RestartButton.addListener(new ClickListener(){
@@ -592,6 +601,7 @@ public class MyScreen extends Game implements Screen{
 
     @Override
     public void dispose() {
+        blaster.dispose();
         soundtouch.dispose();
         world.dispose();
         imgfirst.dispose();
